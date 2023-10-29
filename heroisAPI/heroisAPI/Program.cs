@@ -13,10 +13,10 @@ namespace heroisAPI
 
             // Add services to the container.
             string politicaCors = "_politicaCors";
-            builder.Services.AddControllers().AddJsonOptions(options =>
-            {
-                options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
-            }); ;
+            builder.Services.AddControllers();//.AddJsonOptions(options =>
+            //{
+            //    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+            //}); ;
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();

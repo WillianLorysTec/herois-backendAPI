@@ -1,6 +1,7 @@
 ﻿using Interfaces.Servico;
 using Models.DTOs;
 using Models.Entidades;
+using Models.ViewModel;
 
 namespace Servico
 {
@@ -21,6 +22,11 @@ namespace Servico
         public bool ExcluirHeroi(int idHeroi)
         {
             return _repositorio.ExcluirHeroi(idHeroi);
+        }
+
+        public HeroiViewModel ListarHeroiPorId(int idHeroi)
+        {
+            return _repositorio.ListarHeroiPorID(idHeroi);
         }
 
         public List<Heroi> ListarHerois()

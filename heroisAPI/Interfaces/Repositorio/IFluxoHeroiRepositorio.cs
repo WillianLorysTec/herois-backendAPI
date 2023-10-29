@@ -8,7 +8,7 @@ namespace Interfaces.Repositorio
     {
         public Heroi CriarHeroi(HeroiDTO heroi);
         public List<Heroi> ListarHerois();
-        public HeroiAtualizacaoViewModel ListarHeroiPorID(int idHeroi);
+        public HeroiViewModel ListarHeroiPorID(int idHeroi);
         public bool ExcluirHeroi(int idHeroi); // tratar retorno com fluentResult
         List<Superpoderes> ListarPoderes();
     }

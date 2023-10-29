@@ -2,6 +2,7 @@ using Interfaces.Servico;
 using Microsoft.AspNetCore.Mvc;
 using Models.DTOs;
 using Models.Entidades;
+using Models.ViewModel;
 
 namespace heroisAPI.Controllers
 {
@@ -40,12 +41,18 @@ namespace heroisAPI.Controllers
         {
             List<Heroi> heroi = _servico.ListarHerois();
 
-
             return Ok(heroi);
 
         }
 
-        //[HttpGet]
+        [HttpGet("ListarHeroiID")]
+        public ActionResult ListarHeroiPorId([FromQuery] int idHeroi)
+        {
+            HeroiViewModel heroi = _servico.ListarHeroiPorId(idHeroi);
+
+            return Ok(heroi);
+
+        }
 
         [HttpGet("ListarPoderes")]
         public ActionResult ListarPoderes()

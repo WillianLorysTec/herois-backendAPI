@@ -119,18 +119,18 @@ namespace Repositorio
             }
         }
 
-        public HeroiAtualizacaoViewModel ListarHeroiPorID(int idHeroi)
+        public HeroiViewModel ListarHeroiPorID(int idHeroi)
         {
             try
             {
-                HeroiAtualizacaoViewModel? heroisAbaAtualizacao = _dados.Herois
+                HeroiViewModel? heroisAbaAtualizacao = _dados.Herois
                     .AsNoTracking()
                     .Where(id => id.Id == idHeroi)
-                    .Select(heroi => new HeroiAtualizacaoViewModel
+                    .Select(heroi => new HeroiViewModel
                     {
                         Id = heroi.Id,
                         NomeHeroi = heroi.Nome,
-                        SuperPoderes = heroi.SuperPoderes.Select(sp => new SuperpoderAtualizacaoViewModel
+                        SuperPoderes = heroi.SuperPoderes.Select(sp => new SuperpoderViewModel
                         {
                             Id = sp.Id,
                             Nome = sp.Superpoder
@@ -138,7 +138,7 @@ namespace Repositorio
                     })
                     .FirstOrDefault();
 
-                return heroisAbaAtualizacao ?? new HeroiAtualizacaoViewModel();
+                return heroisAbaAtualizacao ?? new HeroiViewModel();
 
             }
             catch (Exception ex)
