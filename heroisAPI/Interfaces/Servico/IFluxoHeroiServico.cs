@@ -9,7 +9,8 @@ namespace Interfaces.Servico
         public Heroi CriarHeroi(HeroiDTO heroi);
         public List<Heroi> ListarHerois();
         public bool ExcluirHeroi(int idHeroi); // tratar retorno com fluentResult
-         public List<Superpoderes> ListarPoderes();
+        public List<Superpoderes> ListarPoderes();
         HeroiViewModel ListarHeroiPorId(int idHeroi);
+        void AtualizarHeroi(HeroiDTO heroi);
     }
 }

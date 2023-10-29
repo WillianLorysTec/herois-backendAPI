@@ -13,6 +13,12 @@ namespace Servico
         {
             _repositorio = repositorio;
         }
+
+        public void AtualizarHeroi(HeroiDTO heroi)
+        {
+            _repositorio.AtualizarHeroi(heroi);
+        }
+
         public Heroi CriarHeroi(HeroiDTO heroi)
         {
             Heroi resultado = _repositorio.CriarHeroi(heroi);

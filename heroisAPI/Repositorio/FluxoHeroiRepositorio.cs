@@ -129,7 +129,10 @@ namespace Repositorio
                     .Select(heroi => new HeroiViewModel
                     {
                         Id = heroi.Id,
-                        NomeHeroi = heroi.Nome,
+                        Nome = heroi.Nome,
+                        NomeHeroi = heroi.NomeHeroi,
+                        Peso = heroi.Peso,
+                        Altura = heroi.Altura,
                         SuperPoderes = heroi.SuperPoderes.Select(sp => new SuperpoderViewModel
                         {
                             Id = sp.Id,
@@ -175,6 +178,79 @@ namespace Repositorio
             {
                 throw new Exception("Erro ao listar poderes", ex);
             }
+        }
+
+        public void AtualizarHeroi(HeroiDTO heroi)
+        {
+            try
+            {
+                using (var transaction = _dados.Database.BeginTransaction())
+                {
+                    Heroi? heroi_entidade = _dados.Herois.FirstOrDefault(i => i.Id == heroi.Id);
+
+                    if (heroi_entidade != null)
+                    {
+                        heroi_entidade.Nome = heroi.Nome;
+                        heroi_entidade.NomeHeroi = heroi.NomeHeroi;
+                        heroi_entidade.Peso = heroi.Peso;
+                        heroi_entidade.Altura = heroi.Altura;
+                        heroi_entidade.DataNascimento = heroi.DataNascimento;
+
+                        _dados.Update(heroi_entidade);
+
+                        transaction.Commit();
+                        AtualizarPoderes(heroi.PoderesAdicionados, heroi_entidade);
+
+                        _dados.SaveChanges();
+
+
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+
+        private void AtualizarPoderes(List<int> poderesParaAdicionar, Heroi heroi_entidade)
+        {
+            using (var transaction = _dados.Database.BeginTransaction())
+            {
+                try
+                {
+                    var heroi = _dados.Herois
+                     .Include(h => h.SuperPoderes)
+                     .Single(h => h.Id == heroi_entidade.Id);
+
+                    List<Superpoderes> poderesAtualizados = _dados.Poder
+                        .Where(p => poderesParaAdicionar.Contains(p.Id))
+                        .ToList();
+
+                    // Remove os superpoderes antigos que não estão na lista de novos poderes
+                    var superPoderesParaRemover = heroi.SuperPoderes
+                        .Where(sp => !poderesAtualizados.Any(np => np.Id == sp.Id))
+                        .ToList();
+
+                    foreach (var poderAntigo in superPoderesParaRemover)
+                    {
+                        heroi.SuperPoderes.Remove(poderAntigo);
+                    }
+
+                    // Adiciona os novos superpoderes
+                    heroi.SuperPoderes.AddRange(poderesAtualizados);
+
+                    _dados.SaveChanges();
+                    transaction.Commit();
+
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new Exception("Erro ao adionar poderes", ex);
+                }
+            }
+
         }
     }
 }

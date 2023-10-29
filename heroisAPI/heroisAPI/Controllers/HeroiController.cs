@@ -34,8 +34,6 @@ namespace heroisAPI.Controllers
         }
 
 
-        //ListarHerois
-
         [HttpGet("ListarHerois")]
         public ActionResult ListarHerois()
         {
@@ -58,6 +56,13 @@ namespace heroisAPI.Controllers
         public ActionResult ListarPoderes()
         {
             return Ok(_servico.ListarPoderes());
+        }
+
+        [HttpPut("AtualizarHeroi")]
+        public ActionResult AtualizarHeroi(HeroiDTO heroi)
+        {
+            _servico.AtualizarHeroi(heroi);
+            return Ok();
         }
 
     }
