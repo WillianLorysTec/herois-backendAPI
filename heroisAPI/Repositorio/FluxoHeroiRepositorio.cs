@@ -1,4 +1,5 @@
-﻿using Interfaces.Repositorio;
+﻿using FluentResults;
+using Interfaces.Repositorio;
 using Microsoft.EntityFrameworkCore;
 using Models.DTOs;
 using Models.Entidades;
@@ -14,9 +15,58 @@ namespace Repositorio
         {
             _dados = dados;
         }
-        public Heroi CriarHeroi(HeroiDTO heroi)
-        {
+        //public Heroi CriarHeroi(HeroiDTO heroi)
+        //{
 
+        //    using (var transaction = _dados.Database.BeginTransaction())
+        //    {
+        //        try
+        //        {
+        //            Heroi heroi_entidade = new()
+        //            {
+        //                Id = null,
+        //                Nome = heroi.Nome,
+        //                NomeHeroi = heroi.NomeHeroi,
+        //                Peso = heroi.Peso,
+        //                Altura = heroi.Altura
+
+        //            };
+
+        //            _dados.Herois.Add(heroi_entidade);
+        //            _dados.SaveChanges();
+
+        //            transaction.Commit();
+
+        //            // não tenho tanto conhecimento em entity, acabei por buscar o registro inserido por nome
+
+        //            Heroi? heroiInserido = _dados.Herois.FirstOrDefault(h => h.NomeHeroi == heroi.NomeHeroi);
+
+        //            if (heroiInserido != null)
+        //            {
+        //                InserirPoderes(heroiInserido, heroi.PoderesAdicionados);
+
+        //                return heroiInserido;
+
+        //            }
+        //            else
+        //            {
+        //                throw new Exception("Registro não encontrado após a inserção.");
+        //            }
+
+
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            transaction.Rollback();
+        //            throw new Exception("Erro ao criar heroi" + ex.Message);
+        //        }
+        //    }
+
+        //}
+
+
+        public Result CriarHeroi(HeroiDTO heroi)
+        {
             using (var transaction = _dados.Database.BeginTransaction())
             {
                 try
@@ -28,40 +78,51 @@ namespace Repositorio
                         NomeHeroi = heroi.NomeHeroi,
                         Peso = heroi.Peso,
                         Altura = heroi.Altura
-
                     };
+                    // perguntar se já existe o heroi
+                    Heroi? existeHeroi = _dados.Herois.FirstOrDefault(i => i.NomeHeroi == heroi.NomeHeroi);
+                    if (existeHeroi != null) 
+                    {
+                        return Result.Fail($"Não é possível inserir mais de um {heroi.NomeHeroi}, imagine a confusão que isso poderia gerar");
+                    }
 
                     _dados.Herois.Add(heroi_entidade);
                     _dados.SaveChanges();
 
                     transaction.Commit();
 
-                    // não tenho tanto conhecimento em entity, acabei por buscar o registro inserido por nome
-
-                    Heroi? heroiInserido = _dados.Herois.FirstOrDefault(h => h.NomeHeroi == heroi.NomeHeroi);
+                    // Busque o registro inserido pelo Id, que é o valor gerado automaticamente
+                    Heroi? heroiInserido = _dados.Herois.FirstOrDefault(h => h.Id == heroi_entidade.Id);
 
                     if (heroiInserido != null)
                     {
                         InserirPoderes(heroiInserido, heroi.PoderesAdicionados);
 
-                        return heroiInserido;
-
+                        return Result.Ok();
                     }
                     else
                     {
-                        throw new Exception("Registro não encontrado após a inserção.");
+                        return Result.Fail("Herói não encontrado!");
                     }
-
-
+                }
+                catch (DbUpdateConcurrencyException co)
+                {
+                    transaction.Rollback();
+                    return Result.Fail("Eita parece que estamos sendo muito utilizado: " + co.Message);
+                }
+                catch (DbUpdateException up)
+                {
+                    transaction.Rollback();
+                    return Result.Fail("Erro ao tentar salvar o heroi: " + up.Message);
                 }
                 catch (Exception ex)
                 {
                     transaction.Rollback();
-                    throw new Exception("Erro ao criar heroi" + ex.Message);
+                    return Result.Fail("Erro ao criar heroi: " + ex.Message);
                 }
             }
-
         }
+
 
 
 

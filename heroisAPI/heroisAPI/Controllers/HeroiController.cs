@@ -1,3 +1,4 @@
+using FluentResults;
 using Interfaces.Servico;
 using Microsoft.AspNetCore.Mvc;
 using Models.DTOs;
@@ -20,9 +21,26 @@ namespace heroisAPI.Controllers
         [HttpPost("CriarHeroi")]
         public ActionResult CriarHeroi([FromBody] HeroiDTO heroi)
         {
-            _servico.CriarHeroi(heroi);
+            Result resultado = _servico.CriarHeroi(heroi);
 
-            return Ok();
+            if (resultado.IsSuccess)
+            {
+                return StatusCode(201);
+            }
+            else if (resultado.Errors.Count == 1 && resultado.Errors[0].Message == "Herói não encontrado!")
+            {
+                return NotFound(resultado.Errors[0].Message);
+            }
+            else if (resultado.IsFailed)
+            {
+                return StatusCode(400, resultado.Reasons);
+            }
+            else
+            {
+                return StatusCode(500, resultado.Reasons);
+            }
+
+
         }
 
         [HttpPost("RemoverHeroi")]

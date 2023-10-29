@@ -1,4 +1,5 @@
-﻿using Interfaces.Servico;
+﻿using FluentResults;
+using Interfaces.Servico;
 using Models.DTOs;
 using Models.Entidades;
 using Models.ViewModel;
@@ -19,9 +20,9 @@ namespace Servico
             _repositorio.AtualizarHeroi(heroi);
         }
 
-        public Heroi CriarHeroi(HeroiDTO heroi)
+        public Result CriarHeroi(HeroiDTO heroi)
         {
-            Heroi resultado = _repositorio.CriarHeroi(heroi);
+            Result resultado = _repositorio.CriarHeroi(heroi);
             return resultado;
         }
 
