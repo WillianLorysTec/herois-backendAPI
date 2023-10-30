@@ -24,13 +24,24 @@ Provavelmente será necessário mudar senha ou a porta da connection string;
 
 
 
+
+
 Angular -> Aqui eu acredito que se tiver alguma mudança, seria relacionado a porta do IIS (DETALHE:: eu usei o tempo todo o servidor padrão IIS disponibilizado pelo Visual Studio,
-executar o projeto diferente disso, pode talvez ocacionar algum erro de cors... fora que mudaria a porta previamente configurada no launchsettings.json que faz o bat com o environment
+executar o projeto diferente disso, pode talvez ocasionar algum erro de cors... fora que mudaria a porta previamente configurada no launchsettings.json que faz o bat com o environment
 do endpoint no projto ANGULAR). Caso precise mudar a porta no projeto ANGULAR o arquivo Environment.prod.ts   path: Environment -> Environment.prod.ts
+
 
 ![image](https://github.com/WillianLorysTec/herois-backendAPI/assets/62141114/31ba6afb-3f9a-4430-9479-d37456d76f51)
 
 
+
+Deixarei a pagina inical do swagger e do front;
+
+![image](https://github.com/WillianLorysTec/herois-backendAPI/assets/62141114/8552a4f3-8e02-41e0-8083-7d38e5aa7165)
+
+
+
+![image](https://github.com/WillianLorysTec/herois-backendAPI/assets/62141114/c104abd3-0a01-4171-ba8e-96065699a5a4)
 
 
 
