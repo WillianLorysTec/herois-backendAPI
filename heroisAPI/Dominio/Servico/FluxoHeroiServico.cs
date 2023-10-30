@@ -15,9 +15,10 @@ namespace Servico
             _repositorio = repositorio;
         }
 
-        public void AtualizarHeroi(HeroiDTO heroi)
+        public Result AtualizarHeroi(HeroiDTO heroi)
         {
-            _repositorio.AtualizarHeroi(heroi);
+            Result resultado = _repositorio.AtualizarHeroi(heroi);
+            return resultado;
         }
 
         public Result CriarHeroi(HeroiDTO heroi)

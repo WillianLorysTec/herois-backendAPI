@@ -79,8 +79,25 @@ namespace heroisAPI.Controllers
         [HttpPut("AtualizarHeroi")]
         public ActionResult AtualizarHeroi(HeroiDTO heroi)
         {
-            _servico.AtualizarHeroi(heroi);
-            return Ok();
+            Result resultado = _servico.AtualizarHeroi(heroi);
+
+            if (resultado.IsSuccess)
+            {
+                return StatusCode(201);
+            }
+            else if (resultado.Errors.Count == 1 && resultado.Errors[0].Message == "Herói não encontrado!")
+            {
+                return NotFound(resultado.Errors[0].Message);
+            }
+            else if (resultado.IsFailed)
+            {
+                return StatusCode(400, resultado.Reasons);
+            }
+            else
+            {
+                return StatusCode(500, resultado.Reasons);
+            }
+
         }
 
     }

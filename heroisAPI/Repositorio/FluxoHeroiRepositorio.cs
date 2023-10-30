@@ -76,6 +76,7 @@ namespace Repositorio
                         Id = null,
                         Nome = heroi.Nome,
                         NomeHeroi = heroi.NomeHeroi,
+                        DataNascimento = heroi.DataNascimento,
                         Peso = heroi.Peso,
                         Altura = heroi.Altura
                     };
@@ -83,7 +84,7 @@ namespace Repositorio
                     Heroi? existeHeroi = _dados.Herois.FirstOrDefault(i => i.NomeHeroi == heroi.NomeHeroi);
                     if (existeHeroi != null) 
                     {
-                        return Result.Fail($"Não é possível inserir mais de um {heroi.NomeHeroi}, imagine a confusão que isso poderia gerar");
+                        return Result.Fail($"Não é possível inserir mais de um {heroi.NomeHeroi.ToUpper()}, imagine a confusão que isso poderia gerar");
                     }
 
                     _dados.Herois.Add(heroi_entidade);
@@ -108,7 +109,7 @@ namespace Repositorio
                 catch (DbUpdateConcurrencyException co)
                 {
                     transaction.Rollback();
-                    return Result.Fail("Eita parece que estamos sendo muito utilizado: " + co.Message);
+                    return Result.Fail("Eita parece que estamos sobrecarregados: " + co.Message);
                 }
                 catch (DbUpdateException up)
                 {
@@ -169,6 +170,7 @@ namespace Repositorio
                     else
                     {
                         transaction.Rollback();
+                        //return Result.Fail("Herói não encontrado!");
                         return false;  // com o fluent result tratar **não encontramos nenhum heroi
                     }
                 }
@@ -194,10 +196,11 @@ namespace Repositorio
                         NomeHeroi = heroi.NomeHeroi,
                         Peso = heroi.Peso,
                         Altura = heroi.Altura,
+                        DataNascimento = heroi.DataNascimento,
                         SuperPoderes = heroi.SuperPoderes.Select(sp => new SuperpoderViewModel
                         {
                             Id = sp.Id,
-                            Nome = sp.Superpoder
+                            Superpoder = sp.Superpoder
                         })
                     })
                     .FirstOrDefault();
@@ -241,18 +244,18 @@ namespace Repositorio
             }
         }
 
-        public void AtualizarHeroi(HeroiDTO heroi)
+        public Result AtualizarHeroi(HeroiDTO heroi)
         {
-            try
+            using (var transaction = _dados.Database.BeginTransaction())
             {
-                using (var transaction = _dados.Database.BeginTransaction())
+                try
                 {
+               
                     Heroi? heroi_entidade = _dados.Herois.FirstOrDefault(i => i.Id == heroi.Id);
 
                     if (heroi_entidade != null)
                     {
                         heroi_entidade.Nome = heroi.Nome;
-                        heroi_entidade.NomeHeroi = heroi.NomeHeroi;
                         heroi_entidade.Peso = heroi.Peso;
                         heroi_entidade.Altura = heroi.Altura;
                         heroi_entidade.DataNascimento = heroi.DataNascimento;
@@ -260,21 +263,47 @@ namespace Repositorio
                         _dados.Update(heroi_entidade);
 
                         transaction.Commit();
-                        AtualizarPoderes(heroi.PoderesAdicionados, heroi_entidade);
+                        Result poderesAtualizados = AtualizarPoderes(heroi.PoderesAdicionados, heroi_entidade);
 
-                        _dados.SaveChanges();
+                        if (poderesAtualizados.IsSuccess)
+                        {
+                            _dados.SaveChanges();
+                            return Result.Ok();
 
+                        }
+                        else
+                        {
+                            transaction.Rollback();
+                            return Result.Fail("Erro genérico.. revertendo.");
+
+                        }
 
                     }
+                    else
+                    {
+                        return Result.Fail("Herói não encontrado!");
+                    }
+                }
+                catch (DbUpdateConcurrencyException co)
+                {
+                    transaction.Rollback();
+                    return Result.Fail("Eita parece que estamos sobrecarregados: " + co.Message);
+                }
+                catch (DbUpdateException up)
+                {
+                    transaction.Rollback();
+                    return Result.Fail("Erro ao tentar atualizar poderes do heroi: " + up.Message);
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    return Result.Fail("Erro ao atualizar poder do heroi: " + ex.Message);
                 }
             }
-            catch (Exception ex)
-            {
-
-            }
+           
         }
 
-        private void AtualizarPoderes(List<int> poderesParaAdicionar, Heroi heroi_entidade)
+        private Result AtualizarPoderes(List<int> poderesParaAdicionar, Heroi heroi_entidade)
         {
             using (var transaction = _dados.Database.BeginTransaction())
             {
@@ -304,11 +333,23 @@ namespace Repositorio
                     _dados.SaveChanges();
                     transaction.Commit();
 
+                    return Result.Ok();
+
+                }
+                catch (DbUpdateConcurrencyException co)
+                {
+                    transaction.Rollback();
+                    return Result.Fail("Eita parece que estamos sobrecarregados: " + co.Message);
+                }
+                catch (DbUpdateException up)
+                {
+                    transaction.Rollback();
+                    return Result.Fail("Erro ao tentar atualizar poderes do heroi: " + up.Message);
                 }
                 catch (Exception ex)
                 {
                     transaction.Rollback();
-                    throw new Exception("Erro ao adionar poderes", ex);
+                    return Result.Fail("Erro ao atualizar poder do heroi: " + ex.Message);
                 }
             }
 
