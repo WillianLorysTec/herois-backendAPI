@@ -41,7 +41,8 @@ Deixarei a pagina inical do swagger e do front;
 
 
 
-![image](https://github.com/WillianLorysTec/herois-backendAPI/assets/62141114/c104abd3-0a01-4171-ba8e-96065699a5a4)
+![image](https://github.com/WillianLorysTec/herois-backendAPI/assets/62141114/cf92789c-ac01-48f2-afa9-0aed3b4d716e)
+
 
 
 
