@@ -45,6 +45,10 @@ Deixarei a pagina inical do swagger e do front;
 
 
 
+ --- Execução do docker compose ---
+
+  Infelizmente o tempo foi curto e eu queria um design bacana no front. Mas, o docker é uma ferramenta que venho estudando bastente, junto com todo o lado fullCyle ( kubernets, jenkins, linux ... ) Acabou que não consegui montar o compose do projeto todo, mas fica aí a minha disponibilidade. 
 
 
-Execução do docker compose
+Qualquer novidade entrar em contato por favor.
+
