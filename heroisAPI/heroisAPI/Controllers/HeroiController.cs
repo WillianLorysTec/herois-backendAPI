@@ -43,12 +43,53 @@ namespace heroisAPI.Controllers
 
         }
 
-        [HttpPost("RemoverHeroi")]
+        [HttpPut("AtualizarHeroi")]
+        public ActionResult AtualizarHeroi(HeroiDTO heroi)
+        {
+            Result resultado = _servico.AtualizarHeroi(heroi);
+
+            if (resultado.IsSuccess)
+            {
+                return StatusCode(201);
+            }
+            else if (resultado.Errors.Count == 1 && resultado.Errors[0].Message == "Herói não encontrado!")
+            {
+                return NotFound(resultado.Errors[0].Message);
+            }
+            else if (resultado.IsFailed)
+            {
+                return StatusCode(400, resultado.Reasons);
+            }
+            else
+            {
+                return StatusCode(500, resultado.Reasons);
+            }
+
+        }
+
+
+        [HttpDelete("RemoverHeroi")]
         public ActionResult RemoverHeroi([FromQuery] int idHeroi)
         {
-            _servico.ExcluirHeroi(idHeroi);
+            Result resultado = _servico.ExcluirHeroi(idHeroi);
 
-            return Ok();
+            if (resultado.IsSuccess)
+            {
+                return StatusCode(201);
+            }
+            else if (resultado.Errors.Count == 1 && resultado.Errors[0].Message == "Herói não encontrado!")
+            {
+                return NotFound(resultado.Errors[0].Message);
+            }
+            else if (resultado.IsFailed)
+            {
+                return StatusCode(400, resultado.Reasons);
+            }
+            else
+            {
+                return StatusCode(500, resultado.Reasons);
+            }
+
         }
 
 
@@ -76,29 +117,6 @@ namespace heroisAPI.Controllers
             return Ok(_servico.ListarPoderes());
         }
 
-        [HttpPut("AtualizarHeroi")]
-        public ActionResult AtualizarHeroi(HeroiDTO heroi)
-        {
-            Result resultado = _servico.AtualizarHeroi(heroi);
-
-            if (resultado.IsSuccess)
-            {
-                return StatusCode(201);
-            }
-            else if (resultado.Errors.Count == 1 && resultado.Errors[0].Message == "Herói não encontrado!")
-            {
-                return NotFound(resultado.Errors[0].Message);
-            }
-            else if (resultado.IsFailed)
-            {
-                return StatusCode(400, resultado.Reasons);
-            }
-            else
-            {
-                return StatusCode(500, resultado.Reasons);
-            }
-
-        }
 
     }
 }

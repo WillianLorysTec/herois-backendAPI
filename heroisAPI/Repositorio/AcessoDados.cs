@@ -28,6 +28,7 @@ namespace Repositorio
         public DbSet<Heroi> Herois { get; set; }
         public DbSet<Superpoderes> Poder { get; set; }
 
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

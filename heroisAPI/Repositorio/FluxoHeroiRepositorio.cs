@@ -15,55 +15,8 @@ namespace Repositorio
         {
             _dados = dados;
         }
-        //public Heroi CriarHeroi(HeroiDTO heroi)
-        //{
-
-        //    using (var transaction = _dados.Database.BeginTransaction())
-        //    {
-        //        try
-        //        {
-        //            Heroi heroi_entidade = new()
-        //            {
-        //                Id = null,
-        //                Nome = heroi.Nome,
-        //                NomeHeroi = heroi.NomeHeroi,
-        //                Peso = heroi.Peso,
-        //                Altura = heroi.Altura
-
-        //            };
-
-        //            _dados.Herois.Add(heroi_entidade);
-        //            _dados.SaveChanges();
-
-        //            transaction.Commit();
-
-        //            // não tenho tanto conhecimento em entity, acabei por buscar o registro inserido por nome
-
-        //            Heroi? heroiInserido = _dados.Herois.FirstOrDefault(h => h.NomeHeroi == heroi.NomeHeroi);
-
-        //            if (heroiInserido != null)
-        //            {
-        //                InserirPoderes(heroiInserido, heroi.PoderesAdicionados);
-
-        //                return heroiInserido;
-
-        //            }
-        //            else
-        //            {
-        //                throw new Exception("Registro não encontrado após a inserção.");
-        //            }
-
-
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            transaction.Rollback();
-        //            throw new Exception("Erro ao criar heroi" + ex.Message);
-        //        }
-        //    }
-
-        //}
-
+        // POR BOA PRÁTICA, NÃO VOU USAR DO DISPOSE MANUAL NO ENTITY POIS JÁ INJETEI A DEPENDÊNCIA
+        // E O CONTAINER DE INJEÇÃO DEVE CUIDAR DISTO. (acredito eu)
 
         public Result CriarHeroi(HeroiDTO heroi)
         {
@@ -80,9 +33,9 @@ namespace Repositorio
                         Peso = heroi.Peso,
                         Altura = heroi.Altura
                     };
-                    // perguntar se já existe o heroi
+
                     Heroi? existeHeroi = _dados.Herois.FirstOrDefault(i => i.NomeHeroi == heroi.NomeHeroi);
-                    if (existeHeroi != null) 
+                    if (existeHeroi != null)
                     {
                         return Result.Fail($"Não é possível inserir mais de um {heroi.NomeHeroi.ToUpper()}, imagine a confusão que isso poderia gerar");
                     }
@@ -92,7 +45,6 @@ namespace Repositorio
 
                     transaction.Commit();
 
-                    // Busque o registro inserido pelo Id, que é o valor gerado automaticamente
                     Heroi? heroiInserido = _dados.Herois.FirstOrDefault(h => h.Id == heroi_entidade.Id);
 
                     if (heroiInserido != null)
@@ -151,36 +103,43 @@ namespace Repositorio
                 }
             }
         }
-        public bool ExcluirHeroi(int idHeroi)
+        public Result ExcluirHeroi(int idHeroi)
         {
             using (var transaction = _dados.Database.BeginTransaction())
             {
                 try
                 {
-                    Heroi? heroi = _dados.Herois.FirstOrDefault(h => h.Id == idHeroi);
+
+                    Heroi? heroi = _dados.Herois.Include(h => h.SuperPoderes)
+                        .FirstOrDefault(h => h.Id == idHeroi);
 
                     if (heroi != null)
                     {
+
+                        heroi.SuperPoderes.Clear();
+
                         _dados.Herois.Remove(heroi);
+
                         _dados.SaveChanges();
 
                         transaction.Commit();
-                        return true;
+
+                        return Result.Ok();
                     }
                     else
                     {
                         transaction.Rollback();
-                        //return Result.Fail("Herói não encontrado!");
-                        return false;  // com o fluent result tratar **não encontramos nenhum heroi
+                        return Result.Fail("Herói não encontrado!");
                     }
                 }
                 catch (Exception ex)
                 {
                     transaction.Rollback();
-                    throw new Exception("Erro ao excluir herói", ex);
+                    return Result.Fail($"Erro ao excluir heroi: {ex.Message}");
                 }
             }
         }
+
 
         public HeroiViewModel ListarHeroiPorID(int idHeroi)
         {
@@ -250,7 +209,7 @@ namespace Repositorio
             {
                 try
                 {
-               
+
                     Heroi? heroi_entidade = _dados.Herois.FirstOrDefault(i => i.Id == heroi.Id);
 
                     if (heroi_entidade != null)
@@ -300,7 +259,7 @@ namespace Repositorio
                     return Result.Fail("Erro ao atualizar poder do heroi: " + ex.Message);
                 }
             }
-           
+
         }
 
         private Result AtualizarPoderes(List<int> poderesParaAdicionar, Heroi heroi_entidade)

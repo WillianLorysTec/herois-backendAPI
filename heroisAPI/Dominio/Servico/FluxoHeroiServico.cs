@@ -27,9 +27,10 @@ namespace Servico
             return resultado;
         }
 
-        public bool ExcluirHeroi(int idHeroi)
+        public Result ExcluirHeroi(int idHeroi)
         {
-            return _repositorio.ExcluirHeroi(idHeroi);
+            Result resultado = _repositorio.ExcluirHeroi(idHeroi);
+            return resultado;
         }
 
         public HeroiViewModel ListarHeroiPorId(int idHeroi)
