@@ -8,8 +8,11 @@ Foram dois dias BEM produtivos, consegui extrair muito bem meu conhecimento para
 
 Utilizei Mysql server 8.0
 (Eu gerei o banco manualmente, sem a ajuda do Entity code fist)
+O dump localizado junto com a classe AcessoDados
 Recomendo fazer o restore da database seguindo este preset:
 eu particularment uso o MySQL workbench
+
+![image](https://github.com/WillianLorysTec/herois-backendAPI/assets/62141114/e9e3c216-2ba9-4e0f-a05a-90a3fa661fb4)
 
 ![image](https://github.com/WillianLorysTec/herois-backendAPI/assets/62141114/d5c9553b-eca6-4389-bce3-8668f9459af8)
 
